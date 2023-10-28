@@ -10,6 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Visite
 {
+    public function getDatecreationString() : string 
+    {
+        if($this->datecreation ==null){
+            return "";
+        }else {
+            return $this->datecreation->format('d/m/Y');
+        }
+    }
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
