@@ -2,11 +2,13 @@
 namespace App\Controller\admin;
 
 use App\Entity\Visite;
+use App\Form\VisiteType;
 use App\Repository\VisiteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
 
 /**
@@ -26,9 +28,10 @@ class AdminVoyagesController extends AbstractController {
      * 
      * @param VisiteRepository $repository
      */
-    public function __construct(VisiteRepository $repository) {
-        $this->repository = $repository;
-    }
+    public function __construct(EntityManagerInterface $entityManager, VisiteRepository $repository) {
+    $this->entityManager = $entityManager;
+    $this->repository = $repository;
+}
 
     /**
      * @Route("/admin", name="admin.voyages")
@@ -51,6 +54,42 @@ class AdminVoyagesController extends AbstractController {
          $this->repository->remove($visite, true);
          return $this->redirectToRoute('admin.voyages');
      }
+     /**
+      * @Route("/admin/edit/{id}", name="admin.voyage.edit")
+      * @param int $id
+      * @return Response
+      */
+    public function edit(int $id, Request $request): Response {
+    // Récupérez l'entité Visite depuis la base de données
+    $visite = $this->repository->find($id);
+
+    if (!$visite) {
+        throw $this->createNotFoundException('Visite not found');
+    }
+
+    // Créez le formulaire en utilisant l'entité Visite
+    $formVisite = $this->createForm(VisiteType::class, $visite);
+
+    // Gérez la soumission du formulaire
+    $formVisite->handleRequest($request);
+
+    if ($formVisite->isSubmitted() && $formVisite->isValid()) {
+        // L'entité Visite a été mise à jour par le formulaire
+        // Vous n'avez pas besoin d'appeler $this->repository->add() ici
+
+        // Enregistrez les changements en base de données
+        $this->entityManager->flush();
+
+        // Redirigez l'utilisateur vers une autre page ou renvoyez une réponse appropriée
+        return $this->redirectToRoute('admin.voyages');
+    }
+
+    return $this->render("admin/admin.voyage.edit.html.twig", [
+        'visite' => $visite,
+        'formvisite' => $formVisite->createView()
+    ]);
+}
+
 
 
 }
