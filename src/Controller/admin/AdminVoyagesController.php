@@ -4,11 +4,11 @@ namespace App\Controller\admin;
 use App\Entity\Visite;
 use App\Form\VisiteType;
 use App\Repository\VisiteRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
 
 
 /**
@@ -89,7 +89,24 @@ class AdminVoyagesController extends AbstractController {
         'formvisite' => $formVisite->createView()
     ]);
 }
-
-
+        /**
+         * @Route("/admin/ajout", name="admin.voyage.ajout")
+         * @param Request $request
+         * @return Response
+         */
+        public function ajout (Request $request):Response {
+           $visite = new Visite ();
+           $formVisite = $this->createForm(VisiteType ::class, $visite);
+           
+           $formVisite->handleRequest($request);
+           if($formVisite->isSubmitted()&& $formVisite->isValid()){
+               $this->repository->add($visite, true); 
+               return $this->redirectToRoute('admin.voyages');
+           }
+           return $this->render("admin/admin.voyage.ajout.html.twig", [
+               'visite' => $visite,
+               'formvisite' => $formVisite->createView()
+           ]);
+       }
 
 }
