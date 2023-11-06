@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 /**
  * Description of AdminVoyagesController
  *
@@ -49,11 +48,12 @@ class AdminVoyagesController extends AbstractController {
       * @param int $id
       * @return Response
       */
-     public function suppr(int $id) : Response {
+    public function suppr(int $id) : Response {
          $visite = $this->repository->find($id);
          $this->repository->remove($visite, true);
          return $this->redirectToRoute('admin.voyages');
      }
+     
      /**
       * @Route("/admin/edit/{id}", name="admin.voyage.edit")
       * @param int $id

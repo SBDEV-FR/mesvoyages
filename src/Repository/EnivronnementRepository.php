@@ -30,14 +30,16 @@ class EnivronnementRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Enivronnement $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
+    
 
+    public function remove(Enivronnement $environnement, $flush = true) {
+        $entityManager = $this->getEntityManager();
+        $entityManager->remove($environnement);
         if ($flush) {
-            $this->getEntityManager()->flush();
+                $entityManager->flush();
+            }
         }
-    }
+
 
 //    /**
 //     * @return Enivronnement[] Returns an array of Enivronnement objects
